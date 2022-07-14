@@ -1,0 +1,4 @@
+---
+# vars file for hadoop_data
+
+namenode_ip: hartono

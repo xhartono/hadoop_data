@@ -1,0 +1,33 @@
+---
+# tasks file for hadoop_data
+
+- name: create data node directory
+  file:
+	path: /dn
+	state: directory
+	mode: '0755'
+
+- name: configure hdfs file
+  template:
+	src: hdfs.xml
+	dest: /etc/hadoop/hdfs-site.xml
+	mode: u=rw,g=r,o=r
+  register: hdfs
+
+- name: configure core file
+  template:
+	src: core.xml
+	dest: /etc/hadoop/core-site.xml
+	mode: u=rw,g=r,o=r
+
+- name: check namenode in jps
+  command: "jps"
+  become: yes
+  become_method: sudo
+  become_user: root
+  register: jps_status
+  changed_when: False
+
+- name: start data node
+  command: hdfs --daemon start datanode
+  when: '"DataNode" not in jps_status.stdout'
